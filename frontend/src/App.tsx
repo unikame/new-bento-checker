@@ -10,7 +10,7 @@ export default function App() {
   const [file, setFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   
-  // 各区画の枠の「位置」と「サイズ」（初期値。画像がない時は非表示用）
+  // 各区画の枠の「位置」と「サイズ」
   const [sections, setSections] = useState<Sections>({
     top_left:     { x: 50,  y: 40,  width: 180, height: 180 },
     top_right:    { x: 450, y: 40,  width: 200, height: 180 },
@@ -20,7 +20,7 @@ export default function App() {
   const [judgeResults, setJudgeResults] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
-  // ⚠️ 【重要】ここにあなたの「8000番のパブリックURL」を貼り付けてください！
+  // 🌐 プロキシ（同居の裏ワザ）設定用のURL。余計な文字列を無くし、シンプルにこれだけにします！
   const AI_SERVER_URL = "/api"; 
 
   // 写真が選択された時の処理
@@ -50,18 +50,22 @@ export default function App() {
     formData.append("file", file);
 
     try {
-      // 本物のAIサーバーに画像を送信して解析
+      // プロキシ経由でAIサーバーに画像を送信して解析
       const response = await fetch(`${AI_SERVER_URL}/predict`, {
         method: "POST",
         body: formData,
       });
+      
+      if (!response.ok) {
+        throw new Error(`HTTPエラー! ステータス: ${response.status}`);
+      }
+      
       const data = await response.json();
 
       // AIサーバーから返ってきた検出枠（あれば）を画面の赤枠に反映させる
       const updatedSections = { ...sections };
       const apiResults = data.results || [];
 
-      // AIから結果が届いたら、その座標で画面の枠を上書き
       apiResults.forEach((res: any) => {
         if (sections[res.label]) {
           const [xmin, ymin, xmax, ymax] = res.box;
@@ -80,7 +84,7 @@ export default function App() {
       apiResults.forEach((res: any) => {
         resultsSummary[res.label] = {
           blank_rate: res.sukasuka_ratio,
-          status: res.sukasuka_ratio >= 10.0 ? "FAIL" : "PASS" // 10%以上なら警告
+          status: res.sukasuka_ratio >= 10.0 ? "FAIL" : "PASS"
         };
       });
       setJudgeResults(resultsSummary);
