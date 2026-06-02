@@ -1,4 +1,3 @@
-# backend/app/judge.py
 import cv2
 import numpy as np
 
@@ -13,7 +12,7 @@ def calculate_blank_rate_and_judge(image_path: str, box: dict) -> dict:
         
     h_img, w_img, _ = img.shape
     
-    # 2. 画面から送られてくる座標がはみ出さないように安全ガードを入れる
+    # 2. 画面から送られてくる座標が画像からはみ出さないように安全ガードを入れる
     x = max(0, box["x"])
     y = max(0, box["y"])
     w = min(box["width"], w_img - x)
@@ -45,13 +44,3 @@ def calculate_blank_rate_and_judge(image_path: str, box: dict) -> dict:
         "blank_rate": round(blank_rate, 2),
         "status": status
     }
-
-# --- 単体テスト用のコード（このファイルを直接実行した時だけ動く） ---
-if __name__ == "__main__":
-    # テスト用にお弁当の最初の一枚の「右上区画」っぽい座標を仮定
-    # お手持ちの画像のパスに合わせて変更してください
-    test_image = "../4_10 スカスカ (2).jpg" 
-    test_box = {"x": 650, "y": 80, "width": 250, "height": 250}
-    
-    result = calculate_blank_rate_and_judge(test_image, test_box)
-    print("【テスト実行結果】:", result)
