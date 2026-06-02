@@ -21,7 +21,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
 
   // ⚠️ 【重要】ここにあなたの「8000番のパブリックURL」を貼り付けてください！
-  const AI_SERVER_URL = "あなたのAIサーバーのURL"; 
+  const AI_SERVER_URL = "https://cuddly-waddle-q796jv4595wwh9w4q-8000.app.github.dev/"; 
 
   // 写真が選択された時の処理
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
